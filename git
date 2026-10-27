@@ -1,0 +1,68 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+
+# --- Step 1: Generate / Load Dataset ---
+# (Neenga ungaloda actual CSV file irundha df = pd.read_csv('your_data.csv') potukalam)
+np.random.seed(42)
+n_students = 500
+
+gaming_hours = np.random.exponential(scale=2.5, size=n_students).clip(0, 10)
+study_hours = np.random.normal(loc=4.5, scale=1.5, size=n_students).clip(1, 10)
+sleep_hours = np.random.normal(loc=7.0, scale=1.0, size=n_students).clip(4, 10)
+
+# GPA calculation logic (Negative impact from gaming, positive from studying)
+gpa = (
+    3.2
+    + (0.25 * study_hours)
+    - (0.18 * gaming_hours)
+    + (0.05 * sleep_hours)
+    + np.random.normal(0, 0.25, size=n_students)
+).clip(1.5, 4.0)
+
+df = pd.DataFrame(
+    {
+        "Gaming_Hours": gaming_hours,
+        "Study_Hours": study_hours,
+        "Sleep_Hours": sleep_hours,
+        "GPA": gpa,
+    }
+)
+
+print("--- Dataset Preview ---")
+print(df.head(), "\n")
+
+# --- Step 2: Statistical Summary ---
+print("--- Summary Statistics ---")
+print(df.describe(), "\n")
+
+# --- Step 3: Correlation Matrix ---
+print("--- Correlation Matrix ---")
+print(df.corr(), "\n")
+
+# --- Step 4: Data Visualization ---
+plt.figure(figsize=(10, 6))
+sns.scatterplot(
+    data=df,
+    x="Gaming_Hours",
+    y="GPA",
+    hue="Study_Hours",
+    palette="coolwarm",
+    alpha=0.8,
+)
+plt.title("Impact of Gaming Hours on Academic GPA")
+plt.xlabel("Daily Gaming Hours")
+plt.ylabel("Academic GPA")
+plt.legend(title="Study Hours")
+plt.savefig("gaming_vs_gpa.png", dpi=300, bbox_inches="tight")
+plt.show()
+
+# --- Step 5: Machine Learning (Predicting GPA) ---
+X = df[["Gaming_Hours", "Study_Hours", "Sleep_Hours"]]
+y = df["GPA"]
+
+X_train, X_test, y_train, y_test = train_test_
